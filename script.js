@@ -1,11 +1,10 @@
 (function() {
     // Set up the context for the Web Audio API
     var audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    
+
     // Add placeholders for generated oscillator and gain node
-    var oscillator = null;
-    var gainNode = null;
-    
+    var points = [];
+
     // Save a reference to the canvas and get its context
     var canvas = document.getElementById("theremin");
     var canvasContext = canvas.getContext("2d");
@@ -19,62 +18,84 @@
         canvas.height = window.innerHeight;
     }
 
-    function calculateFrequency(xPosition) {
-        var minFrequency = 20,
-            maxFrequency = 2000;
-
-        return ((xPosition / canvas.width) * maxFrequency) + minFrequency;
-    };
-
-    function calculateGain(yPosition) {
-        var minGain = 0,
-            maxGain = 1;
-
-        return 1 - ((yPosition / canvas.height) * maxGain) + minGain;
-    };
-
-    function start(e) {
+    function mouseStart(e) {
         e.preventDefault();
-        var x = e.clientX | e.pageX;
-        var y = e.clientY | e.pageY;
 
-        // Mouse has been pressed
-        oscillator = audioContext.createOscillator();
-        oscillator.frequency.setTargetAtTime(calculateFrequency(x), audioContext.currentTime, 0.01);
-        
-        
-        gainNode = audioContext.createGain();
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-
-        gainNode.gain.setTargetAtTime(calculateGain(y), audioContext.currentTime, 0.01);
-
-        oscillator.start(audioContext.currentTime);
+        var point = new Point(e, audioContext);
+        points.push(point);
     }
-
-    function end(e) {
+    
+    function touchStart(e) {
         e.preventDefault();
 
-        // Mouse has been released
-        oscillator.stop(audioContext.currentTime);
-        oscillator.disconnect();
-    }
+        for (var i = 0; i < e.changedTouches.length; i++) {
+            var point = new Point(e.changedTouches[i], audioContext);
 
-    function move(e) {
-        e.preventDefault();
-        var x = e.clientX | e.pageX;
-        var y = e.clientY | e.pageY;
-
-        if(oscillator) {
-            oscillator.frequency.setTargetAtTime(calculateFrequency(x), audioContext.currentTime, 0.01);
-            gainNode.gain.setTargetAtTime(calculateGain(y), audioContext.currentTime, 0.01);
+            points.push(point);
         }
     }
 
-    canvas.addEventListener('mousedown', start);
-    canvas.addEventListener('touchstart', start);
-    canvas.addEventListener('mouseup', end);
-    canvas.addEventListener('touchend', end);
-    canvas.addEventListener('mousemove', move);
-    canvas.addEventListener('touchmove', move);
+    function mouseMove(e) {
+        e.preventDefault();
+
+        var pos = getPos(undefined);
+        
+        if(pos !== null) {
+            points[pos].update(e);
+        }
+    }
+
+    function touchMove(e) {
+        e.preventDefault();
+
+        for (var i = 0; i < e.changedTouches.length; i++) {
+            var pos = getPos(e.changedTouches[i].identifier);
+            
+            if(pos !== null) {
+                points[pos].update(e);
+            }
+        }
+    }
+
+    function mouseEnd(e) {
+        e.preventDefault();
+
+        var pos = getPos(undefined);
+        
+        if(pos !== null) {
+            points[pos].stop();
+            points.splice(pos, 1);
+        }
+    }
+
+    function touchEnd(e) {
+        e.preventDefault();
+
+        for (var i = 0; i < e.changedTouches.length; i++) {
+            var pos = getPos(e.changedTouches[i].identifier);
+            
+            if(pos !== null) {
+                points[pos].stop();
+                points.splice(pos, 1);
+            }
+        }
+    }
+
+    function getPos(id) {
+        for (var i = 0; i < points.length; i++) {
+            if (points[i].getIdentifier() == id) {
+                return i;
+            }
+        }
+
+        return null;
+    }
+
+    canvas.addEventListener('mousedown', mouseStart);
+    canvas.addEventListener('touchstart', touchStart);
+    canvas.addEventListener('mouseup', mouseEnd);
+    canvas.addEventListener('touchend', touchEnd);
+    canvas.addEventListener('touchcancel', touchEnd);
+    canvas.addEventListener('mousemove', mouseMove);
+    canvas.addEventListener('touchmove', touchMove);
 })();
