@@ -94,6 +94,7 @@
     canvas.addEventListener('mousedown', mouseStart);
     canvas.addEventListener('touchstart', touchStart);
     canvas.addEventListener('mouseup', mouseEnd);
+    canvas.addEventListener('mouseout', mouseEnd);
     canvas.addEventListener('touchend', touchEnd);
     canvas.addEventListener('touchcancel', touchEnd);
     canvas.addEventListener('mousemove', mouseMove);
