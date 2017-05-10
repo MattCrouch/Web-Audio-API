@@ -13,6 +13,19 @@
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
+    var drawVisual;
+
+    function draw() {
+        drawVisual = requestAnimationFrame(draw);
+
+        canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+        for(var i = 0; i < points.length; i++) {
+            points[i].draw();
+        }
+    }
+
+    draw();
+
     function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -21,7 +34,7 @@
     function mouseStart(e) {
         e.preventDefault();
 
-        var point = new Point(e, audioContext);
+        var point = new Point(e, audioContext, canvasContext);
         points.push(point);
     }
     
@@ -29,7 +42,7 @@
         e.preventDefault();
 
         for (var i = 0; i < e.changedTouches.length; i++) {
-            var point = new Point(e.changedTouches[i], audioContext);
+            var point = new Point(e.changedTouches[i], audioContext, canvasContext);
 
             points.push(point);
         }
