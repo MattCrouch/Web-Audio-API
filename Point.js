@@ -1,8 +1,10 @@
-function Point(point, audioContext, canvasContext) {
+function Point(point, audioContext, canvas) {
     // Capture data about point
-    var x = point.clientX | point.pageX;
-    var y = point.clientY | point.pageY;
+    var x = Math.min(point.clientX, canvas.width);
+    var y = Math.min(point.clientY, canvas.height);
+
     var identifier = point.identifier;
+    var canvasContext = canvas.getContext("2d");
     var color = `hsl(${Math.round(Math.random() * 255)}, 100%, 50%)`;
 
     // Create oscillator node
@@ -31,8 +33,10 @@ function Point(point, audioContext, canvasContext) {
 
     // Update the tone based on point data
     function update(point) {
-        x = point.clientX | point.pageX;
-        y = point.clientY | point.pageY;
+        x = Math.min(point.clientX, canvas.width);
+        y = Math.min(point.clientY, canvas.height);
+
+        // console.log(point, x, y);
 
         oscillator.frequency.setTargetAtTime(_calculateFrequency(), audioContext.currentTime, 0.01);
         gainNode.gain.setTargetAtTime(_calculateGain(), audioContext.currentTime, 0.01);
@@ -58,13 +62,13 @@ function Point(point, audioContext, canvasContext) {
         canvasContext.beginPath();
 
         // Determine the width of each segment
-        var sliceWidth = window.innerWidth / bufferLength;
+        var sliceWidth = canvas.width / bufferLength;
         
         // Draw the line
         var x = 0;
         for (var i = 0; i < bufferLength; i++) {
             var amplitude = dataArray[i] / 128;
-            var y = amplitude * window.innerHeight / 2;
+            var y = amplitude * canvas.height / 2;
 
             if (i === 0) {
                 canvasContext.moveTo(x, y);
@@ -76,7 +80,7 @@ function Point(point, audioContext, canvasContext) {
         }
 
         // End the line in the middle of the right edge of the canvas
-        canvasContext.lineTo(window.innerWidth, window.innerHeight / 2);
+        canvasContext.lineTo(canvas.width, canvas.height / 2);
 
         // Add glow to line
         canvasContext.shadowColor = color;
@@ -93,7 +97,7 @@ function Point(point, audioContext, canvasContext) {
         var minFrequency = 20;
         var maxFrequency = 2000;
 
-        return ((x / window.innerWidth) * maxFrequency) + minFrequency;
+        return ((x / canvas.width) * maxFrequency) + minFrequency;
     };
 
     // Calculate the volume based on the window width
@@ -101,7 +105,9 @@ function Point(point, audioContext, canvasContext) {
         var minGain = 0;
         var maxGain = 1;
 
-        return 1 - ((y / window.innerHeight) * maxGain) + minGain;
+        // console.log(y, canvas.height);
+
+        return 1 - ((y / canvas.height) * maxGain) + minGain;
     };
 
     // Return values for main script

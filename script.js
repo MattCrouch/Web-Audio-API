@@ -36,7 +36,7 @@
     function mouseStart(e) {
         e.preventDefault();
 
-        var point = new Point(e, audioContext, canvasContext);
+        var point = new Point(e, audioContext, canvas);
         points.push(point);
     }
     
@@ -45,7 +45,8 @@
         e.preventDefault();
 
         for (var i = 0; i < e.changedTouches.length; i++) {
-            var point = new Point(e.changedTouches[i], audioContext, canvasContext);
+            console.log(e.changedTouches[i]);
+            var point = new Point(e.changedTouches[i], audioContext, canvas);
 
             points.push(point);
         }
@@ -58,6 +59,7 @@
         var pos = getPos(undefined);
         
         if(pos !== null) {
+            console.log(e);
             points[pos].update(e);
         }
     }
@@ -67,10 +69,11 @@
         e.preventDefault();
 
         for (var i = 0; i < e.changedTouches.length; i++) {
+            console.log(e.changedTouches[i]);
             var pos = getPos(e.changedTouches[i].identifier);
             
             if(pos !== null) {
-                points[pos].update(e);
+                points[pos].update(e.changedTouches[i]);
             }
         }
     }
