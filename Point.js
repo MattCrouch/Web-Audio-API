@@ -78,6 +78,12 @@ function Point(point, audioContext, canvasContext) {
         // End the line in the middle of the right edge of the canvas
         canvasContext.lineTo(window.innerWidth, window.innerHeight / 2);
 
+        // Add glow to line
+        canvasContext.shadowColor = color;
+        canvasContext.shadowOffsetX = 0;
+        canvasContext.shadowOffsetY = 0;
+        canvasContext.shadowBlur = 10;
+
         // Render the line
         canvasContext.stroke();
     };
