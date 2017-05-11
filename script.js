@@ -19,6 +19,7 @@
     // Draw each point to the canvas
     function draw() {
         requestAnimationFrame(draw);
+        // console.log(canvas.height);
 
         canvasContext.clearRect(0, 0, canvas.width, canvas.height);
         for(var i = 0; i < points.length; i++) {
