@@ -13,10 +13,12 @@
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
-    var drawVisual;
+    // Kick off drawing process
+    draw();
 
+    // Draw each point to the canvas
     function draw() {
-        drawVisual = requestAnimationFrame(draw);
+        requestAnimationFrame(draw);
 
         canvasContext.clearRect(0, 0, canvas.width, canvas.height);
         for(var i = 0; i < points.length; i++) {
@@ -24,13 +26,13 @@
         }
     }
 
-    draw();
-
+    // Match the canvas to the window size
     function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
     }
 
+    // Act on mouse click down
     function mouseStart(e) {
         e.preventDefault();
 
@@ -38,6 +40,7 @@
         points.push(point);
     }
     
+    // Act on touch down
     function touchStart(e) {
         e.preventDefault();
 
@@ -48,6 +51,7 @@
         }
     }
 
+    // Act on mouse move when clicked
     function mouseMove(e) {
         e.preventDefault();
 
@@ -58,6 +62,7 @@
         }
     }
 
+    // Act on touch move
     function touchMove(e) {
         e.preventDefault();
 
@@ -70,6 +75,7 @@
         }
     }
 
+    // Act on mouse click up
     function mouseEnd(e) {
         e.preventDefault();
 
@@ -81,6 +87,7 @@
         }
     }
 
+    // Act on touch up
     function touchEnd(e) {
         e.preventDefault();
 
@@ -94,6 +101,7 @@
         }
     }
 
+    // Get the position in the points array
     function getPos(id) {
         for (var i = 0; i < points.length; i++) {
             if (points[i].getIdentifier() == id) {
@@ -104,6 +112,7 @@
         return null;
     }
 
+    // Add event listeners
     canvas.addEventListener('mousedown', mouseStart);
     canvas.addEventListener('touchstart', touchStart);
     canvas.addEventListener('mouseup', mouseEnd);
