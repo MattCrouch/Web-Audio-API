@@ -1,7 +1,7 @@
 function Point(point, audioContext, canvas) {
     // Capture data about point
-    var x = Math.min(point.clientX, canvas.width);
-    var y = Math.min(point.clientY, canvas.height);
+    var x = Math.min(Math.max(point.clientX, 0), canvas.width);
+    var y = Math.min(Math.max(point.clientY, 0), canvas.height);
 
     var identifier = point.identifier;
     var canvasContext = canvas.getContext("2d");
@@ -33,10 +33,8 @@ function Point(point, audioContext, canvas) {
 
     // Update the tone based on point data
     function update(point) {
-        x = Math.min(point.clientX, canvas.width);
-        y = Math.min(point.clientY, canvas.height);
-
-        // console.log(point, x, y);
+        x = Math.min(Math.max(point.clientX, 0), canvas.width);
+        y = Math.min(Math.max(point.clientY, 0), canvas.height);
 
         oscillator.frequency.setTargetAtTime(_calculateFrequency(), audioContext.currentTime, 0.01);
         gainNode.gain.setTargetAtTime(_calculateGain(), audioContext.currentTime, 0.01);
@@ -104,8 +102,6 @@ function Point(point, audioContext, canvas) {
     function _calculateGain() {
         var minGain = 0;
         var maxGain = 1;
-
-        // console.log(y, canvas.height);
 
         return 1 - ((y / canvas.height) * maxGain) + minGain;
     };
