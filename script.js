@@ -19,7 +19,6 @@
     // Draw each point to the canvas
     function draw() {
         requestAnimationFrame(draw);
-        // console.log(canvas.height);
 
         canvasContext.clearRect(0, 0, canvas.width, canvas.height);
         for(var i = 0; i < points.length; i++) {
@@ -46,7 +45,6 @@
         e.preventDefault();
 
         for (var i = 0; i < e.changedTouches.length; i++) {
-            console.log(e.changedTouches[i]);
             var point = new Point(e.changedTouches[i], audioContext, canvas);
 
             points.push(point);
@@ -60,7 +58,6 @@
         var pos = getPos(undefined);
         
         if(pos !== null) {
-            console.log(e);
             points[pos].update(e);
         }
     }
@@ -70,7 +67,6 @@
         e.preventDefault();
 
         for (var i = 0; i < e.changedTouches.length; i++) {
-            console.log(e.changedTouches[i]);
             var pos = getPos(e.changedTouches[i].identifier);
             
             if(pos !== null) {
